@@ -215,6 +215,210 @@ The agent includes these popular Indian films:
 - Baahubali 2 (2017) - Telugu Action/Drama
 - Various Tamil and other regional films
 
+## 📊 Enhanced Logging for MCP Protocol Learning
+
+This version includes comprehensive logging to help you understand the Model Context Protocol (MCP) communication between Claude and the MCP agent. Perfect for learning how MCP works under the hood!
+
+### 🔍 What Gets Logged
+
+The enhanced logging system captures:
+- **Protocol Messages**: All requests and responses between Claude and the MCP server
+- **Tool Calls**: Detailed information about which tools are called and with what parameters
+- **Data Filtering**: Step-by-step filtering process for movie recommendations
+- **Error Handling**: Comprehensive error logging with stack traces
+- **Server Lifecycle**: Connection, disconnection, and heartbeat messages
+
+### 📁 Log File Location
+
+Logs are written to: `mcp-server.log` in your project directory
+
+### 🚀 Viewing Logs in Real-Time
+
+#### Option 1: Terminal Logs (Live Output)
+Start the server and watch logs in your terminal:
+```bash
+cd /path/to/your/indian-movies-mcp
+npm start
+```
+
+You'll see live logs like:
+```
+[MCP INFO] === MCP Server Starting ===
+[MCP INFO] Movie database loaded
+[MCP INFO] Server instance created
+[MCP INFO] === MCP SERVER CONNECTED AND READY ===
+```
+
+#### Option 2: Follow Log File (Recommended for Learning)
+In a separate terminal window, watch the detailed log file:
+```bash
+# Navigate to your project directory
+cd /path/to/your/indian-movies-mcp
+
+# Follow the log file in real-time
+tail -f mcp-server.log
+```
+
+#### Option 3: View Complete Log History
+```bash
+# View all logs from the beginning
+cat mcp-server.log
+
+# View recent logs with line numbers
+tail -100 mcp-server.log | nl
+
+# Search for specific events
+grep "TOOL CALL" mcp-server.log
+grep "ERROR" mcp-server.log
+```
+
+### 🎯 Understanding MCP Protocol Flow
+
+When you interact with Claude, watch the logs to see this flow:
+
+1. **Initialization**: Claude connects to your MCP server
+2. **Tool Discovery**: Claude asks "what tools do you have?"
+3. **Tool Execution**: Claude calls specific tools with parameters
+4. **Data Processing**: Your server processes and returns results
+
+#### Example Log Sequence
+
+When you ask Claude "Recommend Hindi comedies", you'll see:
+
+```
+[2024-07-20T10:30:15.123Z] [INFO] === RECEIVED LIST TOOLS REQUEST ===
+[2024-07-20T10:30:15.124Z] [INFO] Sending tools response: {
+  "tools": [...]
+}
+
+[2024-07-20T10:30:15.200Z] [INFO] === RECEIVED TOOL CALL REQUEST ===
+[2024-07-20T10:30:15.201Z] [INFO] Tool name: get_movie_recommendations
+[2024-07-20T10:30:15.202Z] [INFO] Tool arguments: {
+  "genre": "Comedy",
+  "language": "Hindi"
+}
+
+[2024-07-20T10:30:15.203Z] [INFO] Processing movie recommendations request
+[2024-07-20T10:30:15.204Z] [INFO] Starting with movies: {"count": 10}
+[2024-07-20T10:30:15.205Z] [INFO] Filtering by genre: Comedy
+[2024-07-20T10:30:15.206Z] [INFO] After genre filter: {"count": 4}
+[2024-07-20T10:30:15.207Z] [INFO] Filtering by language: Hindi
+[2024-07-20T10:30:15.208Z] [INFO] After language filter: {"count": 3}
+```
+
+### 🔬 Learning MCP Protocol Concepts
+
+Use the logs to understand these MCP concepts:
+
+#### 1. Tool Discovery
+Watch for `LIST TOOLS REQUEST` to see how Claude discovers available tools:
+```bash
+grep -A 10 "LIST TOOLS REQUEST" mcp-server.log
+```
+
+#### 2. Tool Schemas
+See how input validation works by examining tool call parameters:
+```bash
+grep -A 5 "Tool arguments" mcp-server.log
+```
+
+#### 3. Error Handling
+Understand MCP error handling by triggering errors:
+```bash
+# In Claude, try: "Search for a movie that doesn't exist"
+grep "ERROR" mcp-server.log
+```
+
+#### 4. Data Flow
+Track data transformation through the logging:
+```bash
+grep -E "(Starting with|After.*filter)" mcp-server.log
+```
+
+### 🛠️ Debugging with Logs
+
+#### Finding Connection Issues
+```bash
+# Check if server started properly
+grep "SERVER CONNECTED" mcp-server.log
+
+# Look for connection errors
+grep -i "error\|failed" mcp-server.log
+```
+
+#### Analyzing Tool Performance
+```bash
+# See which tools are called most
+grep "Tool called:" mcp-server.log | sort | uniq -c
+
+# Check tool execution times (manual timing from timestamps)
+grep -E "Tool called:|Sending.*response" mcp-server.log
+```
+
+#### Understanding Request Flow
+```bash
+# See the complete request-response cycle
+grep -E "RECEIVED.*REQUEST|Sending.*response" mcp-server.log
+```
+
+### 📚 Log Levels Explained
+
+- **INFO**: Normal operations (tool calls, data processing)
+- **WARN**: Potential issues that don't break functionality
+- **ERROR**: Actual errors that need attention
+- **DEBUG**: Verbose information for detailed analysis
+
+### 🎓 Learning Exercises
+
+Try these exercises to understand MCP better:
+
+#### Exercise 1: Basic Protocol Flow
+1. Start the server and watch logs
+2. Ask Claude: "What movie tools do you have?"
+3. Observe the tool discovery protocol in the logs
+
+#### Exercise 2: Parameter Validation
+1. Ask Claude: "Recommend movies" (no parameters)
+2. Ask Claude: "Recommend Hindi comedies" (with parameters)
+3. Compare how parameters are handled in the logs
+
+#### Exercise 3: Error Handling
+1. Temporarily break the code (add a syntax error)
+2. Watch how errors propagate through the MCP protocol
+3. Fix the code and observe recovery
+
+#### Exercise 4: Data Filtering
+1. Ask for complex filters: "Hindi action movies from 2015 with rating above 8"
+2. Watch the step-by-step filtering process in the logs
+3. Understand how data flows through the system
+
+### 📁 Log File Management
+
+The log file can grow large over time. Manage it with:
+
+```bash
+# Check log file size
+ls -lh mcp-server.log
+
+# Archive old logs
+mv mcp-server.log mcp-server-$(date +%Y%m%d).log
+
+# Clear current logs (server will create new file)
+> mcp-server.log
+
+# Rotate logs automatically (optional)
+# Add to your crontab for daily rotation:
+# 0 0 * * * cd /path/to/indian-movies-mcp && mv mcp-server.log logs/mcp-server-$(date +\%Y\%m\%d).log 2>/dev/null
+```
+
+### 🎯 Pro Tips for MCP Learning
+
+1. **Use Two Terminals**: One for server logs, one for file logs
+2. **Timestamps**: Correlate Claude requests with log timestamps
+3. **JSON Formatting**: Use `jq` to format JSON in logs: `cat mcp-server.log | grep "Tool arguments" | jq`
+4. **Pattern Matching**: Learn to spot patterns in MCP communication
+5. **Error Simulation**: Intentionally trigger errors to understand error handling
+
 ## 🔧 Troubleshooting
 
 ### MCP Server Not Connecting
@@ -276,6 +480,91 @@ sudo chown -R $(whoami) ~/Library/Application\ Support/Claude/
    - Missing commas
    - Incorrect quotes (use `"` not `'`)
    - Missing closing brackets
+
+### Logging Issues
+
+**Problem**: No logs appearing in mcp-server.log
+
+**Solution**:
+1. Check if the server is running:
+   ```bash
+   ps aux | grep "node.*index.js"
+   ```
+
+2. Verify logging.js is properly imported:
+   ```bash
+   grep "from './logging.js'" index.js
+   ```
+
+3. Check file permissions:
+   ```bash
+   ls -la mcp-server.log
+   # If file doesn't exist, it will be created automatically
+   ```
+
+4. Test logging manually:
+   ```bash
+   node -e "import('./logging.js').then(({log}) => log('Test message'))"
+   ```
+
+**Problem**: Logs are too verbose or cluttering terminal
+
+**Solution**:
+1. Use only file logging by redirecting stderr:
+   ```bash
+   npm start 2>/dev/null
+   ```
+
+2. Filter logs by level:
+   ```bash
+   grep "\[ERROR\]" mcp-server.log
+   grep "\[WARN\]" mcp-server.log
+   grep "\[INFO\]" mcp-server.log
+   ```
+
+3. Reduce log verbosity by commenting out detailed logs in index.js
+
+**Problem**: Log file growing too large
+
+**Solution**:
+1. Set up log rotation:
+   ```bash
+   # Create logs directory
+   mkdir -p logs
+   
+   # Rotate current log
+   mv mcp-server.log logs/mcp-server-backup-$(date +%Y%m%d-%H%M%S).log
+   ```
+
+2. Implement size-based rotation:
+   ```bash
+   # Check file size and rotate if > 10MB
+   if [ $(wc -c < mcp-server.log) -gt 10485760 ]; then
+     mv mcp-server.log logs/mcp-server-$(date +%Y%m%d-%H%M%S).log
+   fi
+   ```
+
+**Problem**: Cannot correlate Claude actions with logs
+
+**Solution**:
+1. Use precise timestamps:
+   ```bash
+   # Note the time when you make a request in Claude
+   date
+   # Then check logs around that time
+   grep "2024-07-20T10:30" mcp-server.log
+   ```
+
+2. Add request markers in Claude:
+   - Ask Claude: "Search for test-marker-movie"
+   - Look for this unique term in logs to identify your session
+
+3. Use unique test queries:
+   ```bash
+   # Instead of "recommend movies", use:
+   # "recommend movies with unique-identifier-12345"
+   # Then search logs for "unique-identifier-12345"
+   ```
 
 ## 🔄 Updating the Movie Database
 
