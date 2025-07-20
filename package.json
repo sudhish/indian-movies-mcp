@@ -1,0 +1,16 @@
+{
+  "name": "indian-movies-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Indian movie recommendations",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0"
+  },
+  "keywords": ["mcp", "movies", "indian", "bollywood"],
+  "author": "Your Name",
+  "license": "MIT"
+}
